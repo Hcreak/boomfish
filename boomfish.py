@@ -6,8 +6,8 @@ import sqlite3
 
 app = Flask(__name__)
 app.debug = True
-DATABASE_URL = 'test.db'
-#DATABASE_URL = '/boomfish/db/test.db'
+# DATABASE_URL = 'test.db'
+DATABASE_URL = '/boomfish/db/test.db'
 # DATABASE_URL=':memory:'
 
 

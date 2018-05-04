@@ -1,0 +1,20 @@
+BoomFish
+===================
+
+## Need
+`flask`  `sqlite`  `docker`  `nginx`  `uwsgi`
+
+## Build and Run
+```
+    // docker bulid -t boomfish .
+    docker bulid -t boomfish http://172.17.11.115:10080/hcreak/boomfish.git
+    docker run -d -p 5000:80 --name BOOM boomfish
+
+```
+
+##  Notes
+
+### stable version, beta
+> * 调用ssl 头像链接 速度能快点
+> * 解决时区问题（CTS）  修改dockerfile 
+
