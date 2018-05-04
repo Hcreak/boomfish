@@ -1,5 +1,6 @@
 FROM centos
 
+RUN yum -y install epel-release
 RUN yum -y upgrade
 
 RUN mkdir /boomfish
