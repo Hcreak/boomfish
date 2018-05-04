@@ -20,5 +20,6 @@ RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai  /etc/localtime
 EXPOSE 80
 
 ADD start.sh /boomfish/start.sh
+RUN chmod a+x /boomfish/start.sh
 WORKDIR /boomfish
 CMD ["./start.sh"]
