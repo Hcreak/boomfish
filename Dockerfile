@@ -10,6 +10,7 @@ ADD templates /boomfish/templates
 ADD boomfish.py /boomfish/boomfish.py
 
 RUN yum -y install python python-devel python2-pip nginx
+RUN pip install --upgrade pip
 RUN pip install uwsgi flask
 ADD nginx.conf /etc/nginx/nginx.conf
 ADD uwsgi.ini /boomfish/uwsgi.ini
