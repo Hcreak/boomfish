@@ -6,8 +6,8 @@ import sqlite3
 
 app = Flask(__name__)
 app.debug = True
-#DATABASE_URL = 'test.db'
-DATABASE_URL = '/boomfish/db/test.db'
+DATABASE_URL = 'test.db'
+#DATABASE_URL = '/boomfish/db/test.db'
 # DATABASE_URL=':memory:'
 
 
@@ -16,7 +16,8 @@ DATABASE_URL = '/boomfish/db/test.db'
 #     return 'Hello World!'
 
 def gravatar_url(email):
-    gravatar_url = "https://www.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest() + "?"
+    #gravatar_url = "https://www.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest() + "?"
+    gravatar_url = "https://secure.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest() + "?"
     gravatar_url += urllib.urlencode({'s': str(32), 'r': 'X', 'd': 'identicon'})
     return gravatar_url
 

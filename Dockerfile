@@ -15,6 +15,8 @@ RUN pip install uwsgi flask
 ADD nginx.conf /etc/nginx/nginx.conf
 ADD uwsgi.ini /boomfish/uwsgi.ini
 
+RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai  /etc/localtime
+
 EXPOSE 80
 
 ADD start.sh /boomfish/start.sh

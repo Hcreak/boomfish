@@ -59,26 +59,27 @@
             <div class="comment-content" itemprop="commentText">
                 <p>{{ item['text'] }}</p>
             </div>
+            <ol class="comment-list"><li class="comment-body comment-child comment-level-odd comment-odd comment-by-author" id="comment-3" itemscope="" itemtype="http://schema.org/UserComments"></ol>
         {% endfor %}
 
         <div>
             <span class="widget-title" id="response">添加新评论</span>
             <form id="comment-form" action="/comment" method="post">
                 <div>
-                                            <p class="comment-about">
-                            <label class="required" for="author">称呼</label>
-                            <input name="author" class="text" id="author" type="text" value="">
-                        </p>
-                        <p class="comment-about">
-                            <label class="required" for="mail">邮箱</label>
-                            <input name="mail" class="text" id="mail" type="email" value="">
-                        </p>
-                        <p class="comment-about">
-                            <label for="url">网站</label>
-                            <input name="url" class="text" id="url" type="url" placeholder="http://example.com" value="">
-                        </p>
-                                        <p>
-                        <textarea name="text" class="text-area" rows="8" cols="50"></textarea>
+                    <p class="comment-about">
+                        <label class="required" for="author">称呼</label>
+                        <input name="author" class="text" id="author" type="text" value="" required>
+                    </p>
+                    <p class="comment-about">
+                        <label class="required" for="mail">邮箱</label>
+                        <input name="mail" class="text" id="mail" type="email" value="">
+                    </p>
+                    <p class="comment-about">
+                        <label for="url">网站</label>
+                        <input name="url" class="text" id="url" type="url" placeholder="http://example.com" value="">
+                    </p>
+                    <p>
+                        <textarea name="text" class="text-area" rows="8" cols="50" required></textarea>
                     </p>
                 </div>
                 <div class="col2">
@@ -87,7 +88,6 @@
                     </p>
                 </div>
                 <div class="clear"></div>
-            <input name="_" type="hidden" value="341cc0e6ab5c0e17f0305d9763c4f841"></form>
         </div>
     </div>
 </body>
