@@ -3,9 +3,14 @@ from flask import *
 import urllib, hashlib
 import time
 import sqlite3
+from os import urandom
 
 app = Flask(__name__)
 app.debug = True
+
+app.secret_key = urandom(16)
+
+randomkey = urandom(48)
 # DATABASE_URL = 'test.db'
 DATABASE_URL = '/boomfish/db/test.db'
 # DATABASE_URL=':memory:'
@@ -21,14 +26,23 @@ def gravatar_url(email):
     gravatar_url += urllib.urlencode({'s': str(32), 'r': 'X', 'd': 'identicon'})
     return gravatar_url
 
+def checkkey():
+    key = session.get('key')
+    if key == None:
+        return False
+    if key == randomkey:
+        return True
+    else:
+        return False
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def test():
     conn = sqlite3.connect(DATABASE_URL)
     cur = conn.execute("SELECT * FROM data;")
     conn.commit()
 
-    itemlist = [{'author': item[1],
+    itemlist = [{'id': item[0],
+                 'author': item[1],
                  'gravatar': item[2],
                  'time': str(item[3]),
                  'strtime': str(time.strftime("%B %d, %Y at %H:%M", time.localtime(item[3]))),
@@ -51,13 +65,17 @@ def test():
     # itemlist.append(item)
 
     sum = len(itemlist)
-    return render_template("index.html", sum=sum, itemlist=itemlist)
+
+    mode=None
+    if checkkey():
+        mode='admin'
+    return render_template("index.html", sum=sum, itemlist=itemlist,mode=mode)
 
 
 @app.route('/comment', methods=['POST'])
 def add():
     conn = sqlite3.connect(DATABASE_URL)
-    cur = conn.execute(
+    conn.execute(
         'INSERT INTO data (author,gravatar,time,text,weburl) VALUES (?,?,?,?,?)',
         [request.form['author'],
          gravatar_url(request.form['mail']),
@@ -68,6 +86,31 @@ def add():
     conn.commit()
     return redirect('/')
 
+@app.route('/bug', methods=['GET'])
+def bug():
+    if not session.get('key'):
+        return render_template("login.html")
+    else:
+        session.clear()
+        return redirect('/')
+
+@app.route('/login', methods=['POST'])
+def login():
+    if request.form['username'] == 'hcreak' and request.form['password'] == 'kotori':
+        session['key'] = randomkey
+        return redirect('/')
+    else:
+        return redirect('/bug')
+
+@app.route('/delete/<id>', methods=['GET'])
+def delete(id):
+    if checkkey():
+        conn = sqlite3.connect(DATABASE_URL)
+        conn.execute('DELETE FROM data WHERE id = ?',[id])
+        conn.commit()
+        return redirect('/')
+    else:
+        return redirect('/bug')
 
 if __name__ == '__main__':
     app.run()
