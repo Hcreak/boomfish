@@ -3,7 +3,7 @@ from flask import *
 import urllib, hashlib
 import time
 import sqlite3
-from os import urandom
+from os import urandom,path
 
 app = Flask(__name__)
 app.debug = True
@@ -11,9 +11,13 @@ app.debug = True
 app.secret_key = urandom(16)
 
 randomkey = urandom(48)
-# DATABASE_URL = 'test.db'
-DATABASE_URL = '/boomfish/db/test.db'
+if path.exists('/boomfish/db/test.db'):
+    DATABASE_URL = '/boomfish/db/test.db'
+else:
+    DATABASE_URL = 'test.db'
 # DATABASE_URL=':memory:'
+admin_uesername = 'hcreak'
+admin_password = 'kotori'
 
 
 # @app.route('/')
@@ -21,10 +25,11 @@ DATABASE_URL = '/boomfish/db/test.db'
 #     return 'Hello World!'
 
 def gravatar_url(email):
-    #gravatar_url = "https://www.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest() + "?"
+    # gravatar_url = "https://www.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest() + "?"
     gravatar_url = "https://secure.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest() + "?"
     gravatar_url += urllib.urlencode({'s': str(32), 'r': 'X', 'd': 'identicon'})
     return gravatar_url
+
 
 def checkkey():
     key = session.get('key')
@@ -35,8 +40,7 @@ def checkkey():
     else:
         return False
 
-@app.route('/', methods=['GET'])
-def test():
+def getdata():
     conn = sqlite3.connect(DATABASE_URL)
     cur = conn.execute("SELECT * FROM data;")
     conn.commit()
@@ -66,10 +70,15 @@ def test():
 
     sum = len(itemlist)
 
-    mode=None
+    mode = None
     if checkkey():
-        mode='admin'
-    return render_template("index.html", sum=sum, itemlist=itemlist,mode=mode)
+        mode = 'admin'
+    return render_template("insert.html", sum=sum, itemlist=itemlist, mode=mode)
+
+@app.route('/', methods=['GET'])
+def test():
+
+    return render_template("index.html")
 
 
 @app.route('/comment', methods=['POST'])
@@ -86,6 +95,7 @@ def add():
     conn.commit()
     return redirect('/')
 
+
 @app.route('/bug', methods=['GET'])
 def bug():
     if not session.get('key'):
@@ -94,23 +104,30 @@ def bug():
         session.clear()
         return redirect('/')
 
+
 @app.route('/login', methods=['POST'])
 def login():
-    if request.form['username'] == 'hcreak' and request.form['password'] == 'kotori':
+    if request.form['username'] == admin_uesername and request.form['password'] == admin_password:
         session['key'] = randomkey
         return redirect('/')
     else:
         return redirect('/bug')
 
+
 @app.route('/delete/<id>', methods=['GET'])
 def delete(id):
     if checkkey():
         conn = sqlite3.connect(DATABASE_URL)
-        conn.execute('DELETE FROM data WHERE id = ?',[id])
+        conn.execute('DELETE FROM data WHERE id = ?', [id])
         conn.commit()
         return redirect('/')
     else:
         return redirect('/bug')
+
+@app.route('/refurbish', methods=['POST'])
+def refurbish():
+    # data=request.form['number']
+    return getdata()
 
 if __name__ == '__main__':
     app.run()

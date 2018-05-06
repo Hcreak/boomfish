@@ -5,6 +5,8 @@
     <title>BoomFish</title>
     <!--<link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.css" rel="stylesheet">-->
     <link href="{{ url_for('static', filename='css/style.min.css')}}" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="{{ url_for('static',filename='js/script.js') }}"></script>
 </head>
 <body>
     <!--
@@ -34,7 +36,6 @@
     </div>
     -->
     <div class="comments" id="comments">
-        <span class="widget-title"> 已有 {{ sum }} 条评论</span>
 
 {#        <div class="comment-author" itemprop="creator" itemtype="http://schema.org/Person" itemscope="">#}
 {#            <span itemprop="image"><img width="32" height="32" class="avatar" alt="小白-白" src=""></span>#}
@@ -47,33 +48,12 @@
 {#            <p>修电脑海星 2333</p>#}
 {#        </div>#}
 
+            <div id="insert">
 
-        {% for item in itemlist %}
-            <div class="comment-author" itemprop="creator" itemtype="http://schema.org/Person" itemscope="">
-                {% if item['author'] == 'hcreak' %}
-                    <a href="/bug" ><span itemprop="image"><img width="32" height="32" class="avatar" alt="{{ item['author'] }}" src="{{ item['gravatar'] }}"></span></a>
-                {% else %}
-                    <span itemprop="image"><img width="32" height="32" class="avatar" alt="{{ item['author'] }}" src="{{ item['gravatar'] }}"></span>
-                {% endif %}
-                <cite itemprop="name"><a href="{{ item['weburl'] }}" rel="external nofollow">{{ item['author'] }}</a></cite>
             </div>
-             <div class="comment-meta">
-                <a><time itemprop="commentTime" datetime="{{ item['time'] }}">{{ item['strtime'] }}</time></a>
-            </div>
-            <div class="comment-content" itemprop="commentText">
-                <p>{{ item['text'] }}</p>
-            </div>
-            {% if mode == 'admin' %}
-            <div class="comment-reply">
-                <a href="/delete/{{ item['id'] }}" rel="nofollow">删除</a>
-            </div>
-            {% endif %}
-            <ol class="comment-list"><li class="comment-body comment-child comment-level-odd comment-odd comment-by-author" id="comment-3" itemscope="" itemtype="http://schema.org/UserComments"></ol>
-        {% endfor %}
 
-        <div>
             <span class="widget-title" id="response">添加新评论</span>
-            <form id="comment-form" action="/comment" method="post">
+            <form action="/comment" method="post" id="comment-form" >
                 <div>
                     <p class="comment-about">
                         <label class="required" for="author">称呼</label>
@@ -93,11 +73,11 @@
                 </div>
                 <div class="col2">
                     <p>
-                        <button class="submit" type="submit">提交评论</button>
+                        <button class="submit" type="submit" onclick="">提交评论</button>
                     </p>
                 </div>
                 <div class="clear"></div>
-        </div>
+            </form>
     </div>
 </body>
 </html>

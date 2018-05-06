@@ -14,7 +14,7 @@ BoomFish
 
 ##  Notes
 
-### stable version, beta
-> * 调用ssl 头像链接 速度能快点
-> * 解决时区问题（CTS）  修改dockerfile 
+> * 调用gravatar的ssl链接 速度能快点
+> * 解决时区问题（CTS） 修改dockerfile 
+> * 调整dockerfile构建顺序
 
