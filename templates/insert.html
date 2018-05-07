@@ -1,7 +1,7 @@
-<span class="widget-title"> 已有 <span id="number"> {{ sum }} </span> 条评论</span>
 {% for item in itemlist %}
+    <div class='numcomment' numid="{{ item['id'] }}">
     <div class="comment-author" itemprop="creator" itemtype="http://schema.org/Person" itemscope="">
-        {% if item['author'] == 'hcreak' %}
+        {% if item['author'] == admin_username %}
             <a href="/bug" ><span itemprop="image"><img width="32" height="32" class="avatar" alt="{{ item['author'] }}" src="{{ item['gravatar'] }}"></span></a>
         {% else %}
             <span itemprop="image"><img width="32" height="32" class="avatar" alt="{{ item['author'] }}" src="{{ item['gravatar'] }}"></span>
@@ -20,4 +20,5 @@
     </div>
     {% endif %}
     <ol class="comment-list"><li class="comment-body comment-child comment-level-odd comment-odd comment-by-author" id="comment-3" itemscope="" itemtype="http://schema.org/UserComments"></ol>
+    </div>
 {% endfor %}
