@@ -116,7 +116,8 @@ def add():
 @app.route('/bug', methods=['GET', 'POST'])
 def bug():
     if request.method == 'POST':
-        if request.form['username'] == admin_username and request.form['password'] == admin_password:
+        if request.form['username'] == hashlib.md5(admin_username).hexdigest() \
+                and request.form['password'] == hashlib.md5(admin_password).hexdigest():
             session['key'] = randomkey
             return redirect('/')
         else:

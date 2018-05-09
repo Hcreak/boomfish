@@ -6,7 +6,11 @@
         {% else %}
             <span itemprop="image"><img width="32" height="32" class="avatar" alt="{{ item['author'] }}" src="{{ item['gravatar'] }}"></span>
         {% endif %}
-        <cite itemprop="name"><a href="{{ item['weburl'] }}" rel="external nofollow">{{ item['author'] }}</a></cite>
+        {% if item['weburl'] == '' %}
+            <cite itemprop="name"><a href="javascript:;" rel="external nofollow">{{ item['author'] }}</a></cite>
+        {% else %}
+            <cite itemprop="name"><a href="{{ item['weburl'] }}" rel="external nofollow">{{ item['author'] }}</a></cite>
+        {% endif %}
     </div>
      <div class="comment-meta">
         <a><time itemprop="commentTime" datetime="{{ item['time'] }}">{{ item['strtime'] }}</time></a>

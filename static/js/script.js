@@ -19,10 +19,11 @@ function startRequest()
         dataType:'html',
         success:function (datas) {
             if (datas != 'Norefurbish') {
-                var d = document.getElementById('insert');
-                d.innerHTML = d.innerHTML + datas;
-                var s = document.getElementById('number');
-                s.innerText = $(".numcomment").length;
+                var d = $("#insert");
+                d.append(datas);
+                // d.remove(d.filter(data));
+                var s = $("#number");
+                s.html($(".numcomment").length);
             }
         }
 
