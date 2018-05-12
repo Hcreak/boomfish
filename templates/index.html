@@ -17,7 +17,8 @@
             </div>
 
             <span class="widget-title" id="response">添加新评论</span>
-            <form action="/comment" method="post" id="comment-form" >
+{#            <form action="/comment" method="post" id="comment-form" >#}
+            <div id="comment-form" >
                 <div>
                     <p class="comment-about">
                         <label class="required" for="author">称呼</label>
@@ -32,16 +33,16 @@
                         <input name="url" class="text" id="url" type="url" placeholder="http://example.com" value="">
                     </p>
                     <p>
-                        <textarea name="text" class="text-area" rows="8" cols="50" required></textarea>
+                        <textarea name="text" id="committext" class="text-area" rows="8" cols="50" required></textarea>
                     </p>
                 </div>
                 <div class="col2">
                     <p>
-                        <button class="submit" type="submit" onclick="">提交评论</button>
+                        <button class="submit" type="submit" onclick="sendcommit();">提交评论</button>
                     </p>
                 </div>
                 <div class="clear"></div>
-            </form>
+            </div>
     </div>
 </body>
 </html>

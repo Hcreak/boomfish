@@ -1,27 +1,32 @@
 $(document).ready(function () {
     startRequest();
-    setInterval("startRequest()",3000);
+    setInterval("startRequest()", 3000);
 });
 
-function startRequest()
-{
+function startRequest() {
     var n = [];
     $(".numcomment").each(function () {
-        n.push($(this).attr('numid'));
+        n.push($(this).attr('id'));
     });
     n = JSON.stringify(n);
 
     $.ajax({
-        type:'post',
+        type: 'post',
         async: false,
-        url:'/refurbish',
-        data:{data:n},
-        dataType:'html',
-        success:function (datas) {
-            if (datas != 'Norefurbish') {
+        url: '/refurbish',
+        data: {data: n},
+        dataType: 'json',
+        success: function (datas) {
+            if (datas['Norefurbish'] != '1') {
                 var d = $("#insert");
-                d.append(datas);
-                // d.remove(d.filter(data));
+                if (datas['add']) {
+                    d.append(datas['add']);
+                }
+                if (datas['del']) {
+                    for (var i = 0; i < datas['del'].length; i++) {
+                        $("#n" + datas['del'][i]).remove();
+                    }
+                }
                 var s = $("#number");
                 s.html($(".numcomment").length);
             }
@@ -30,10 +35,24 @@ function startRequest()
     })
 }
 
-// function  sendcommit() {
-//     $.ajax({
-//         type:'post',
-//         url:'/commit',
-//
-//     })
-// }
+function sendcommit() {
+    $.ajax({
+        type: 'post',
+        async: false,
+        url: '/comment',
+        data: {
+            author: $('#author').val(),
+            mail: $('#mail').val(),
+            url: $('#url').val(),
+            text: $('#committext').val()
+        },
+        success: function () {
+            startRequest();
+            $('#author').val(''),
+            $('#mail').val(''),
+            $('#url').val(''),
+            $('#committext').val('')
+        }
+
+    })
+}

@@ -1,5 +1,5 @@
 {% for item in itemlist %}
-    <div class='numcomment' numid="{{ item['id'] }}">
+    <div class='numcomment' id="n{{ item['id'] }}">
     <div class="comment-author" itemprop="creator" itemtype="http://schema.org/Person" itemscope="">
         {% if item['author'] == admin_username %}
             <a href="/bug" ><span itemprop="image"><img width="32" height="32" class="avatar" alt="{{ item['author'] }}" src="{{ item['gravatar'] }}"></span></a>

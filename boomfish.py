@@ -3,19 +3,20 @@ from flask import *
 import urllib, hashlib
 import time
 import sqlite3
-from os import urandom, path
-import json
+import os
 
 app = Flask(__name__)
 app.debug = True
 
-app.secret_key = urandom(16)
-randomkey = urandom(48)
+app.secret_key = os.urandom(16)
+randomkey = os.urandom(48)
 
-if path.exists('/boomfish/db/test.db'):
-    DATABASE_URL = '/boomfish/db/test.db'
-else:
-    DATABASE_URL = 'test.db'
+# if os.path.exists('/boomfish/db/test.db'):
+#     DATABASE_URL = '/boomfish/db/test.db'
+# else:
+#     DATABASE_URL = 'test.db'
+os.chdir(os.path.split(os.path.realpath(__file__))[0])
+DATABASE_URL = 'db/test.db'
 # DATABASE_URL=':memory:'
 
 admin_username = 'hcreak'
@@ -110,7 +111,7 @@ def add():
          request.form['url']]
     )
     conn.commit()
-    return redirect('/')
+    return ''
 
 
 @app.route('/bug', methods=['GET', 'POST'])
@@ -145,7 +146,7 @@ def delete(id):
 @app.route('/refurbish', methods=['POST'])
 def refurbish():
     data = json.loads(request.form['data'])
-    blist = [int(i) for i in data]
+    blist = [int(i[1:]) for i in data]
 
     conn = sqlite3.connect(DATABASE_URL)
     cur = conn.execute("SELECT id FROM data;")
@@ -155,10 +156,18 @@ def refurbish():
     delnums = list(set(blist).difference(set(alist)))  # blist V alist X --> send del
     addnums = list(set(alist).difference(set(blist)))  # alist V blist X --> send add
 
+    recv = {}
     if len(addnums) != 0:
-        return getdata(addnums)
+        recv['add'] = getdata(addnums)
+    if len(delnums) != 0:
+        recv['del'] = delnums
+
+    if len(recv) != 0:
+        recv['Norefurbish'] = '0'
     else:
-        return 'Norefurbish'
+        recv['Norefurbish'] = '1'
+
+    return jsonify(recv)
 
 
 if __name__ == '__main__':
