@@ -56,3 +56,19 @@ function sendcommit() {
 
     })
 }
+
+function senddelete(i) {
+    $.ajax({
+        type: 'get',
+        async: false,
+        url: '/delete/'+i,
+        success: function (data) {
+            if(data=='OK'){
+                startRequest();
+            }
+            else {
+                alert('FUCK YOU!');
+            }
+        }
+    })
+}

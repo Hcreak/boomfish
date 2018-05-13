@@ -20,7 +20,7 @@
     </div>
     {% if mode == 'admin' %}
     <div class="comment-reply">
-        <a href="/delete/{{ item['id'] }}" rel="nofollow">删除</a>
+        <a onclick="senddelete({{ item['id'] }});" rel="nofollow">删除</a>
     </div>
     {% endif %}
     <ol class="comment-list"><li class="comment-body comment-child comment-level-odd comment-odd comment-by-author" id="comment-3" itemscope="" itemtype="http://schema.org/UserComments"></ol>

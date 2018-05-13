@@ -138,9 +138,9 @@ def delete(id):
         conn = sqlite3.connect(DATABASE_URL)
         conn.execute('DELETE FROM data WHERE id = ?', [id])
         conn.commit()
-        return redirect('/')
+        return 'OK'
     else:
-        return redirect('/bug')
+        return 'ERROR'
 
 
 @app.route('/refurbish', methods=['POST'])
