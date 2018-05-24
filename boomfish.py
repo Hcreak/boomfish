@@ -74,6 +74,9 @@ def checkkey():
 #         mode = 'admin'
 #     return render_template("insert.html",itemlist=itemlist, mode=mode, admin_username=admin_username)
 
+def sync_redis():
+    pass
+
 def getdata(datanum):
     execstr = "SELECT * FROM data WHERE " + (' or '.join('id=' + str(i) for i in datanum)) + ";"
     conn = sqlite3.connect(DATABASE_URL)

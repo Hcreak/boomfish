@@ -6,6 +6,7 @@ RUN yum -y upgrade
 RUN yum -y install python python-devel python2-pip nginx gcc
 RUN pip install --upgrade pip
 RUN pip install uwsgi flask
+RUN yum -y install redis
 
 RUN mkdir /boomfish
 ADD db /boomfish/db
@@ -15,6 +16,7 @@ ADD boomfish.py /boomfish/boomfish.py
 
 ADD nginx.conf /etc/nginx/nginx.conf
 ADD uwsgi.ini /boomfish/uwsgi.ini
+ADD redis.conf /etc/redis.conf
 
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai  /etc/localtime
 
