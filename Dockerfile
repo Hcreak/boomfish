@@ -7,6 +7,7 @@ RUN yum -y install python python-devel python2-pip nginx gcc
 RUN pip install --upgrade pip
 RUN pip install uwsgi flask
 RUN yum -y install redis
+RUN pip install redis
 
 RUN mkdir /boomfish
 ADD db /boomfish/db
