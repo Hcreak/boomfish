@@ -4,21 +4,33 @@ import urllib, hashlib
 import time
 import sqlite3
 import os
+import redis
 
 app = Flask(__name__)
 app.debug = True
 
+# keys config
+###############
 app.secret_key = os.urandom(16)
 randomkey = os.urandom(48)
 
-# if os.path.exists('/boomfish/db/test.db'):
-#     DATABASE_URL = '/boomfish/db/test.db'
-# else:
-#     DATABASE_URL = 'test.db'
+
+# sqlite config
+###############
 os.chdir(os.path.split(os.path.realpath(__file__))[0])
 DATABASE_URL = 'db/test.db'
 # DATABASE_URL=':memory:'
+conn = sqlite3.connect(DATABASE_URL,check_same_thread=False)
 
+
+# redis config
+###############
+pool = redis.ConnectionPool(host='localhost',port=6379,decode_responses=True)
+r = redis.Redis(connection_pool=pool)
+
+
+# admin config
+###############
 admin_username = 'hcreak'
 admin_password = 'kotori'
 
@@ -29,7 +41,6 @@ def gravatar_url(email):
     gravatar_url += urllib.urlencode({'s': str(32), 'r': 'X', 'd': 'identicon'})
     return gravatar_url
 
-
 def checkkey():
     key = session.get('key')
     if key == None:
@@ -39,6 +50,13 @@ def checkkey():
     else:
         return False
 
+def sync_redis():
+    cur = conn.execute('SELECT id FROM data')
+    conn.commit()
+    r.delete('idlist')
+    for i in cur.fetchall():
+        r.rpush('idlist',i[0])
+    return
 
 # old getdata (ALL)
 # def getdata():
@@ -74,12 +92,8 @@ def checkkey():
 #         mode = 'admin'
 #     return render_template("insert.html",itemlist=itemlist, mode=mode, admin_username=admin_username)
 
-def sync_redis():
-    pass
-
 def getdata(datanum):
     execstr = "SELECT * FROM data WHERE " + (' or '.join('id=' + str(i) for i in datanum)) + ";"
-    conn = sqlite3.connect(DATABASE_URL)
     cur = conn.execute(execstr)
     conn.commit()
 
@@ -104,7 +118,6 @@ def test():
 
 @app.route('/comment', methods=['POST'])
 def add():
-    conn = sqlite3.connect(DATABASE_URL)
     conn.execute(
         'INSERT INTO data (author,gravatar,time,text,weburl) VALUES (?,?,?,?,?)',
         [request.form['author'],
@@ -114,6 +127,7 @@ def add():
          request.form['url']]
     )
     conn.commit()
+    sync_redis()
     return ''
 
 
@@ -138,9 +152,9 @@ def bug():
 @app.route('/delete/<id>', methods=['GET'])
 def delete(id):
     if checkkey():
-        conn = sqlite3.connect(DATABASE_URL)
         conn.execute('DELETE FROM data WHERE id = ?', [id])
         conn.commit()
+        sync_redis()
         return 'OK'
     else:
         return 'ERROR'
@@ -151,10 +165,7 @@ def refurbish():
     data = json.loads(request.form['data'])
     blist = [int(i[1:]) for i in data]
 
-    conn = sqlite3.connect(DATABASE_URL)
-    cur = conn.execute("SELECT id FROM data;")
-    conn.commit()
-    alist = [i[0] for i in cur.fetchall()]
+    alist = [int(i) for i in r.lrange('idlist',0,-1)]
 
     delnums = list(set(blist).difference(set(alist)))  # blist V alist X --> send del
     addnums = list(set(alist).difference(set(blist)))  # alist V blist X --> send add
@@ -174,4 +185,5 @@ def refurbish():
 
 
 if __name__ == '__main__':
+    sync_redis()
     app.run()
