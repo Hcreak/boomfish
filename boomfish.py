@@ -14,20 +14,17 @@ app.debug = True
 app.secret_key = os.urandom(16)
 randomkey = os.urandom(48)
 
-
 # sqlite config
 ###############
 os.chdir(os.path.split(os.path.realpath(__file__))[0])
 DATABASE_URL = 'db/test.db'
 # DATABASE_URL=':memory:'
-conn = sqlite3.connect(DATABASE_URL,check_same_thread=False)
-
+conn = sqlite3.connect(DATABASE_URL, check_same_thread=False)
 
 # redis config
 ###############
-pool = redis.ConnectionPool(host='localhost',port=6379,decode_responses=True)
+pool = redis.ConnectionPool(host='localhost', port=6379, decode_responses=True)
 r = redis.Redis(connection_pool=pool)
-
 
 # admin config
 ###############
@@ -41,6 +38,7 @@ def gravatar_url(email):
     gravatar_url += urllib.urlencode({'s': str(32), 'r': 'X', 'd': 'identicon'})
     return gravatar_url
 
+
 def checkkey():
     key = session.get('key')
     if key == None:
@@ -50,13 +48,29 @@ def checkkey():
     else:
         return False
 
+
 def sync_redis():
     cur = conn.execute('SELECT id FROM data')
     conn.commit()
     r.delete('idlist')
     for i in cur.fetchall():
-        r.rpush('idlist',i[0])
+        r.rpush('idlist', i[0])
     return
+
+
+def redis_addall():
+    cur = conn.execute('SELECT * FROM data')
+    conn.commit()
+    for i in cur.fetchall():
+        r.hmset(i[0], {'id': i[0],
+                       'author': i[1],
+                       'gravatar': i[2],
+                       'time': str(i[3]),
+                       'strtime': str(time.strftime("%B %d, %Y at %H:%M", time.localtime(i[3]))),
+                       'text': i[4],
+                       'weburl': i[5]})
+    return
+
 
 # old getdata (ALL)
 # def getdata():
@@ -92,18 +106,30 @@ def sync_redis():
 #         mode = 'admin'
 #     return render_template("insert.html",itemlist=itemlist, mode=mode, admin_username=admin_username)
 
-def getdata(datanum):
-    execstr = "SELECT * FROM data WHERE " + (' or '.join('id=' + str(i) for i in datanum)) + ";"
-    cur = conn.execute(execstr)
-    conn.commit()
 
-    itemlist = [{'id': item[0],
-                 'author': item[1],
-                 'gravatar': item[2],
-                 'time': str(item[3]),
-                 'strtime': str(time.strftime("%B %d, %Y at %H:%M", time.localtime(item[3]))),
-                 'text': item[4],
-                 'weburl': item[5]} for item in cur.fetchall()]
+# def getdata(datanum):
+#     execstr = "SELECT * FROM data WHERE " + (' or '.join('id=' + str(i) for i in datanum)) + ";"
+#     cur = conn.execute(execstr)
+#     conn.commit()
+#
+#     itemlist = [{'id': item[0],
+#                  'author': item[1],
+#                  'gravatar': item[2],
+#                  'time': str(item[3]),
+#                  'strtime': str(time.strftime("%B %d, %Y at %H:%M", time.localtime(item[3]))),
+#                  'text': item[4],
+#                  'weburl': item[5]} for item in cur.fetchall()]
+#
+#     mode = None
+#     if checkkey():
+#         mode = 'admin'
+#     return render_template("insert.html", itemlist=itemlist, mode=mode, admin_username=admin_username)
+
+
+def getdata(datanum):  # New getdata For Redis
+    itemlist = []
+    for i in datanum:
+        itemlist.append(r.hgetall(i))
 
     mode = None
     if checkkey():
@@ -128,6 +154,7 @@ def add():
     )
     conn.commit()
     sync_redis()
+    redis_addall()
     return ''
 
 
@@ -165,7 +192,7 @@ def refurbish():
     data = json.loads(request.form['data'])
     blist = [int(i[1:]) for i in data]
 
-    alist = [int(i) for i in r.lrange('idlist',0,-1)]
+    alist = [int(i) for i in r.lrange('idlist', 0, -1)]
 
     delnums = list(set(blist).difference(set(alist)))  # blist V alist X --> send del
     addnums = list(set(alist).difference(set(blist)))  # alist V blist X --> send add
@@ -186,4 +213,5 @@ def refurbish():
 
 if __name__ == '__main__':
     sync_redis()
+    redis_addall()
     app.run()
