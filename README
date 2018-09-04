@@ -17,5 +17,6 @@ BoomFish
 > * 调用gravatar的ssl链接 速度能快点
 > * 解决时区问题（CTS） 修改dockerfile 
 > * 调整dockerfile构建顺序
-> * redis作为索引列表缓存
+> * ~~Redis作为索引列表缓存~~
+> * 全部采用Redis 关闭持久化仅作为缓存使用
 
