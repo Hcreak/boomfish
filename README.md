@@ -7,7 +7,7 @@ BoomFish
 ## Build and Run
 ```
     // docker bulid -t boomfish .
-    docker bulid -t boomfish http://172.17.11.115:10080/hcreak/boomfish.git
+    docker bulid -t boomfish https://github.com/Hcreak/boomfish.git
     docker run -d -p 5000:80 --name BOOM boomfish
 
 ```
@@ -19,4 +19,4 @@ BoomFish
 > * 调整dockerfile构建顺序
 > * ~~Redis作为索引列表缓存~~
 > * 全部采用Redis 关闭持久化仅作为缓存使用
-
+> * 精简css
